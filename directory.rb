@@ -32,8 +32,20 @@ def print_footer(names)
   puts "Overall, we have #{names.count} great students"
 end
 
+def filter_students_by_first_letter(students, letter)
+  # filter students whose names begin with 'letter'
+  students.select { |student| student[:name].start_with?(letter) }
+end
+
+def filter_students_by_length_of_name(students, length)
+  # filter students whose name is less than 'length' characters
+  students.select { |student| student[:name].length < length }
+end
+
 # nothing happens until we call the methods
 students = input_students
+students = filter_students_by_first_letter(students, "J")
+students = filter_students_by_length_of_name(students, 12)
 print_header
 print(students)
 print_footer(students)
