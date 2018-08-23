@@ -1,6 +1,25 @@
+require 'date'
+
 def get_input(prompt)
   puts prompt
   gets.chomp
+end
+
+def get_cohort
+  while true do
+    cohort = get_input("Which cohort does the student belong to?")
+    if cohort.empty? 
+      # if no month is entered or it is unrecognised then
+      # default the month to the current month
+      cohort = Date.today.strftime("%B")
+      puts "Cohort has defaulted to this month: #{cohort}"
+      return cohort.downcase.to_sym
+    end
+    if Date::MONTHNAMES.include?(cohort.capitalize)
+      # a valid month was entered so convert it to a symbol
+      return cohort.downcase.to_sym
+    end
+  end
 end
 
 def input_students
@@ -12,6 +31,8 @@ def input_students
   name = get_input("Enter student's name")
   # while the name is not empty, repeat this code
   while !name.empty? do
+    # get the cohort
+    cohort = get_cohort
     # get the student's country of birth
     country = get_input("Which country were they born in?")
     # get the student's height
@@ -19,7 +40,7 @@ def input_students
     # get the student's hobbies
     hobbies = get_input("What are their hobbies? (e.g. tennis, football, art)")
     # add the student hash to the array
-    students << {name: name, cohort: :november, country: country, height: height, hobbies: hobbies.split(", ")}
+    students << {name: name, cohort: cohort, country: country, height: height, hobbies: hobbies.split(", ")}
     puts "Now we have #{students.count} students"
     # get another name from the user
     name = get_input("Enter the next student's name (or hit return to finish)")
