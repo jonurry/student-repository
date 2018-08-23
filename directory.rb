@@ -49,30 +49,14 @@ def input_students
   students
 end
 
-def header
+def get_header
   # returns an array containing the header contents
   header = ["The students of Villain Academy",
             "-------------------------------"]
 end
 
-def footer(names)
+def get_footer(names)
   "Overall, we have #{names.count} great students"
-end
-
-def numbered_list(students)
-  student_list = []
-  counter = 0
-  while counter < students.length do
-    student = students[counter]
-    counter += 1
-    list_item = "#{counter}. #{student[:name]}"
-    list_item << " - #{student[:country]}"
-    list_item << " (#{student[:cohort]} cohort,"
-    list_item << " #{student[:height]}m,"
-    list_item << " likes #{student[:hobbies].join(", ")})"
-    student_list << list_item
-  end
-  student_list
 end
 
 def centre_contents(students)
@@ -96,17 +80,53 @@ def filter_students_by_length_of_name(students, length)
   students.select { |student| student[:name].length < length }
 end
 
-def print_student_list(students)
+def print_student_list(students, header = true, footer = true, cohort_headings = true, numbered_list = true)
   student_list = []
-  student_list << header
-  student_list << numbered_list(students)
-  student_list << footer(students)
+  cohort_heading = ""
+  if header 
+    student_list << get_header
+  end
+  students.each_with_index do |student, index|
+    if cohort_headings    
+      cohort = student[:cohort].to_s.capitalize
+      if cohort_heading != cohort
+        cohort_heading = cohort
+        student_list << cohort_heading
+        student_list << "-" * cohort_heading.length
+      end
+    end
+    if numbered_list
+      list_item = "#{index + 1}. "
+    else
+      list_item = ""
+    end
+    list_item << "#{student[:name]} "
+    list_item << "- #{student[:country]} "
+    list_item << "(#{student[:cohort]} cohort, "
+    list_item << "#{student[:height]}m, "
+    list_item << "likes #{student[:hobbies].join(", ")})"
+    student_list << list_item
+  end
+  if footer
+    student_list << get_footer(students)
+  end
   student_list.flatten!
+  puts student_list
   puts centre_contents(student_list)
+end
+
+def order_students_by_cohort(students)
+  # order the list of students by cohort
+  # order is determined by the order of months in the year
+  # as defined by Date::MONTHNAMES
+  students.sort { |a, b|
+    Date::MONTHNAMES.index(a[:cohort].to_s.capitalize) <=> Date::MONTHNAMES.index(b[:cohort].to_s.capitalize)
+  }
 end
 
 # nothing happens until we call the methods
 students = input_students
 students = filter_students_by_first_letter(students, "J")
 students = filter_students_by_length_of_name(students, 12)
+students = order_students_by_cohort(students)
 print_student_list(students)
