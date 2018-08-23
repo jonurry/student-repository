@@ -2,7 +2,9 @@ require 'date'
 
 def get_input(prompt)
   puts prompt
-  gets.chomp
+  # use gsub instead of chomp to remove carriage returns
+  gets.gsub(/[\r\n]+$/, "")
+  # gets.chomp
 end
 
 def get_cohort
@@ -116,7 +118,6 @@ def print_student_list(students, header = true, footer = true, cohort_headings =
     student_list << get_footer(students)
   end
   student_list.flatten!
-  puts student_list
   puts centre_contents(student_list)
 end
 
