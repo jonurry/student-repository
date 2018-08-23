@@ -56,7 +56,12 @@ def get_header
 end
 
 def get_footer(names)
-  "Overall, we have #{names.count} great students"
+  number_of_students = names.count
+  if number_of_students === 1
+    "Overall, we have 1 great student"
+  else
+    "Overall, we have #{number_of_students} great students"
+  end
 end
 
 def centre_contents(students)
