@@ -1,4 +1,5 @@
 require 'date'
+require 'csv'
 
 @students = [] # an empty array accessible to all methods
 
@@ -134,6 +135,7 @@ end
 def print_menu
   puts "1. Input the students"
   puts "2. Show the students"
+  puts "3. Save the list to students.csv"
   puts "9. Exit" # 9 because we'll be adding more items later
 end
 
@@ -144,6 +146,8 @@ def process(selection)
     students = order_students_by_cohort()
   when "2"
     print_student_list()
+  when "3"
+    save_students()
   when "9"
     exit # this will cause the program to terminate
   else
@@ -160,6 +164,18 @@ def interactive_menu
     # 3. do what the user has asked
     process(selection)
   end
+end
+
+def save_students
+  # open the file for writing
+  file = File.open("students.csv", "w")
+  # iterate over the array of students
+  @students.each do |student|
+    student_data = [student[:name], student[:cohort], student[:country], student[:height], student[:hobbies]]
+    csv_line = student_data.to_csv
+    file.puts csv_line
+  end
+  file.close
 end
 
 # nothing happens until we call the methods
