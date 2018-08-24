@@ -134,9 +134,35 @@ def order_students_by_cohort(students)
   }
 end
 
+def interactive_menu
+  students = []
+  loop do
+    # 1. print the menu and ask the user what to do
+    puts "1. Input the students"
+    puts "2. Show the students"
+    puts "9. Exit" # 9 because we'll be adding more items later
+    # 2. read the input and save it to a variable
+    selection = gets.chomp
+    # 3. do what the user has asked
+    case selection
+    when "1"
+      students = input_students
+      students = order_students_by_cohort(students)
+    when "2"
+      print_student_list(students)
+    when "9"
+      exit # this will cause the program to terminate
+    else
+      puts "I don't know what you meant, try again"
+    end
+  end
+end
+
 # nothing happens until we call the methods
-students = input_students
-students = filter_students_by_first_letter(students, "J")
-students = filter_students_by_length_of_name(students, 12)
-students = order_students_by_cohort(students)
-print_student_list(students)
+# students = input_students
+# students = filter_students_by_first_letter(students, "J")
+# students = filter_students_by_length_of_name(students, 12)
+# students = order_students_by_cohort(students)
+# print_student_list(students)
+
+interactive_menu
