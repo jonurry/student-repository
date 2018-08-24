@@ -88,37 +88,41 @@ def filter_students_by_length_of_name(students, length)
 end
 
 def print_student_list(students, header = true, footer = true, cohort_headings = true, numbered_list = true)
-  student_list = []
-  cohort_heading = ""
-  if header 
-    student_list << get_header
-  end
-  students.each_with_index do |student, index|
-    if cohort_headings    
-      cohort = student[:cohort].to_s.capitalize
-      if cohort_heading != cohort
-        cohort_heading = cohort
-        student_list << cohort_heading
-        student_list << "-" * cohort_heading.length
+  if students.count > 0
+    student_list = []
+    cohort_heading = ""
+    if header 
+      student_list << get_header
+    end
+    students.each_with_index do |student, index|
+      if cohort_headings    
+        cohort = student[:cohort].to_s.capitalize
+        if cohort_heading != cohort
+          cohort_heading = cohort
+          student_list << cohort_heading
+          student_list << "-" * cohort_heading.length
+        end
       end
+      if numbered_list
+        list_item = "#{index + 1}. "
+      else
+        list_item = ""
+      end
+      list_item << "#{student[:name]} "
+      list_item << "- #{student[:country]} "
+      list_item << "(#{student[:cohort]} cohort, "
+      list_item << "#{student[:height]}m, "
+      list_item << "likes #{student[:hobbies].join(", ")})"
+      student_list << list_item
     end
-    if numbered_list
-      list_item = "#{index + 1}. "
-    else
-      list_item = ""
+    if footer
+      student_list << get_footer(students)
     end
-    list_item << "#{student[:name]} "
-    list_item << "- #{student[:country]} "
-    list_item << "(#{student[:cohort]} cohort, "
-    list_item << "#{student[:height]}m, "
-    list_item << "likes #{student[:hobbies].join(", ")})"
-    student_list << list_item
+    student_list.flatten!
+    puts centre_contents(student_list)
+  else
+    puts "There are no students on the list"
   end
-  if footer
-    student_list << get_footer(students)
-  end
-  student_list.flatten!
-  puts centre_contents(student_list)
 end
 
 def order_students_by_cohort(students)
