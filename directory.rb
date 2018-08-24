@@ -1,5 +1,7 @@
 require 'date'
 
+@students = [] # an empty array accessible to all methods
+
 def get_input(prompt)
   puts prompt
   # use gsub instead of chomp to remove carriage returns
@@ -27,8 +29,6 @@ end
 def input_students
   puts "Please enter the names and details of the students"
   puts "To finish, just hit return twice at the name prompt"
-  # creates an empty array
-  students = []
   # get the first name
   name = get_input("Enter student's name")
   # while the name is not empty, repeat this code
@@ -42,13 +42,11 @@ def input_students
     # get the student's hobbies
     hobbies = get_input("What are their hobbies? (e.g. tennis, football, art)")
     # add the student hash to the array
-    students << {name: name, cohort: cohort, country: country, height: height, hobbies: hobbies.split(", ")}
-    puts "Now we have #{students.count} students"
+    @students << {name: name, cohort: cohort, country: country, height: height, hobbies: hobbies.split(", ")}
+    puts "Now we have #{@students.count} students"
     # get another name from the user
     name = get_input("Enter the next student's name (or hit return to finish)")
   end
-  # return the array of students
-  students
 end
 
 def get_header
@@ -57,44 +55,43 @@ def get_header
             "-------------------------------"]
 end
 
-def get_footer(names)
-  number_of_students = names.count
-  if number_of_students === 1
+def get_footer
+  if @students.count === 1
     "Overall, we have 1 great student"
   else
-    "Overall, we have #{number_of_students} great students"
+    "Overall, we have #{@students.count} great students"
   end
 end
 
-def centre_contents(students)
+def centre_contents(student_list)
   centred_content = []
   # work out the longest string in the array
-  max_length = students.max { |a, b| a.length <=> b.length }.length
+  max_length = student_list.max { |a, b| a.length <=> b.length }.length
   # centre all strings based on the longest string
-  students.each do |student|
+  student_list.each do |student|
     centred_content << student.center(max_length)
   end
   centred_content
 end
 
-def filter_students_by_first_letter(students, letter)
+def filter_students_by_first_letter(letter)
   # filter students whose names begin with 'letter'
-  students.select { |student| student[:name].start_with?(letter) }
+  @students.select { |student| student[:name].start_with?(letter) }
 end
 
-def filter_students_by_length_of_name(students, length)
+def filter_students_by_length_of_name(length)
   # filter students whose name is less than 'length' characters
-  students.select { |student| student[:name].length < length }
+  @students.select { |student| student[:name].length < length }
 end
 
-def print_student_list(students, header = true, footer = true, cohort_headings = true, numbered_list = true)
-  if students.count > 0
+def print_student_list(header = true, footer = true, cohort_headings = true, numbered_list = true)
+  if @students.count > 0
     student_list = []
     cohort_heading = ""
     if header 
-      student_list << get_header
+      student_list << get_header()
     end
-    students.each_with_index do |student, index|
+    @students.each_with_index do |student, index|
       if cohort_headings    
         cohort = student[:cohort].to_s.capitalize
         if cohort_heading != cohort
@@ -116,7 +113,7 @@ def print_student_list(students, header = true, footer = true, cohort_headings =
       student_list << list_item
     end
     if footer
-      student_list << get_footer(students)
+      student_list << get_footer()
     end
     student_list.flatten!
     puts centre_contents(student_list)
@@ -125,36 +122,43 @@ def print_student_list(students, header = true, footer = true, cohort_headings =
   end
 end
 
-def order_students_by_cohort(students)
+def order_students_by_cohort
   # order the list of students by cohort
   # order is determined by the order of months in the year
   # as defined by Date::MONTHNAMES
-  students.sort { |a, b|
+  @students.sort { |a, b|
     Date::MONTHNAMES.index(a[:cohort].to_s.capitalize) <=> Date::MONTHNAMES.index(b[:cohort].to_s.capitalize)
   }
 end
 
+def print_menu
+  puts "1. Input the students"
+  puts "2. Show the students"
+  puts "9. Exit" # 9 because we'll be adding more items later
+end
+
+def process(selection)
+  case selection
+  when "1"
+    students = input_students()
+    students = order_students_by_cohort()
+  when "2"
+    print_student_list()
+  when "9"
+    exit # this will cause the program to terminate
+  else
+    puts "I don't know what you meant, try again"
+  end
+end
+
 def interactive_menu
-  students = []
   loop do
     # 1. print the menu and ask the user what to do
-    puts "1. Input the students"
-    puts "2. Show the students"
-    puts "9. Exit" # 9 because we'll be adding more items later
+    print_menu()
     # 2. read the input and save it to a variable
     selection = gets.chomp
     # 3. do what the user has asked
-    case selection
-    when "1"
-      students = input_students
-      students = order_students_by_cohort(students)
-    when "2"
-      print_student_list(students)
-    when "9"
-      exit # this will cause the program to terminate
-    else
-      puts "I don't know what you meant, try again"
-    end
+    process(selection)
   end
 end
 
@@ -165,4 +169,4 @@ end
 # students = order_students_by_cohort(students)
 # print_student_list(students)
 
-interactive_menu
+interactive_menu()
