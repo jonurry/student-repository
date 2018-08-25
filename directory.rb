@@ -136,6 +136,7 @@ def print_menu
   puts "1. Input the students"
   puts "2. Show the students"
   puts "3. Save the list to students.csv"
+  puts "4. Load the list from students.csv"
   puts "9. Exit" # 9 because we'll be adding more items later
 end
 
@@ -148,6 +149,8 @@ def process(selection)
     print_student_list()
   when "3"
     save_students()
+  when "4"
+    load_students()
   when "9"
     exit # this will cause the program to terminate
   else
@@ -166,16 +169,21 @@ def interactive_menu
   end
 end
 
-def save_students
-  # open the file for writing
-  file = File.open("students.csv", "w")
-  # iterate over the array of students
-  @students.each do |student|
-    student_data = [student[:name], student[:cohort], student[:country], student[:height], student[:hobbies]]
-    csv_line = student_data.to_csv
-    file.puts csv_line
+def load_students
+  @students = []
+  CSV.foreach("students.csv") do |line|
+    name, cohort, country, height, hobbies = line
+    hobbies = hobbies[1..-2].gsub(/(")/, "").split(", ")
+    @students << {name: name, cohort: cohort.to_sym, country: country, height: height, hobbies: hobbies}
   end
-  file.close
+end
+
+def save_students
+  CSV.open("students.csv", "wb") do |csv|
+    @students.each do |student|
+      csv << [student[:name], student[:cohort], student[:country], student[:height], student[:hobbies]]
+    end
+  end
 end
 
 # nothing happens until we call the methods
