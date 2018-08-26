@@ -89,11 +89,9 @@ def print_student_list(header = true, footer = true, cohort_headings = true, num
   if @students.count > 0
     student_list = []
     cohort_heading = ""
-    if header 
-      student_list << get_header()
-    end
+    student_list << get_header() if header
     @students.each_with_index do |student, index|
-      if cohort_headings    
+      if cohort_headings
         cohort = student[:cohort].to_s.capitalize
         if cohort_heading != cohort
           cohort_heading = cohort
@@ -101,33 +99,28 @@ def print_student_list(header = true, footer = true, cohort_headings = true, num
           student_list << "-" * cohort_heading.length
         end
       end
-      if numbered_list
-        list_item = "#{index + 1}. "
-      else
-        list_item = ""
-      end
-      list_item << "#{student[:name]} "
-      list_item << "- #{student[:country]} "
-      list_item << "(#{student[:cohort]} cohort, "
-      list_item << "#{student[:height]}m, "
-      list_item << "likes #{student[:hobbies].join(", ")})"
-      student_list << list_item
+      student_list << format_student_for_printing(numbered_list ? "#{index + 1}. " : "", student)
     end
-    if footer
-      student_list << get_footer()
-    end
-    student_list.flatten!
-    puts centre_contents(student_list)
+    student_list << get_footer() if footer
+    puts centre_contents(student_list.flatten!)
   else
     puts "There are no students on the list"
   end
+end
+
+def format_student_for_printing(list_item, student)
+  list_item << "#{student[:name]} "
+  list_item << "- #{student[:country]} "
+  list_item << "(#{student[:cohort]} cohort, "
+  list_item << "#{student[:height]}m, "
+  list_item << "likes #{student[:hobbies].join(", ")})"
 end
 
 def order_students_by_cohort
   # order the list of students by cohort
   # order is determined by the order of months in the year
   # as defined by Date::MONTHNAMES
-  @students.sort { |a, b|
+  @students.sort! { |a, b|
     Date::MONTHNAMES.index(a[:cohort].to_s.capitalize) <=> Date::MONTHNAMES.index(b[:cohort].to_s.capitalize)
   }
 end
@@ -143,8 +136,8 @@ end
 def process(selection)
   case selection
   when "1"
-    students = input_students()
-    students = order_students_by_cohort()
+    input_students()
+    order_students_by_cohort()
   when "2"
     print_student_list()
   when "3"
