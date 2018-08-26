@@ -43,7 +43,7 @@ def input_students
     # get the student's hobbies
     hobbies = get_input("What are their hobbies? (e.g. tennis, football, art)")
     # add the student hash to the array
-    @students << {name: name, cohort: cohort, country: country, height: height, hobbies: hobbies.split(", ")}
+    add_student(name, cohort, country, height, hobbies)
     puts "Now we have #{@students.count} students"
     # get another name from the user
     name = get_input("Enter the next student's name (or hit return to finish)")
@@ -171,7 +171,6 @@ end
 
 def try_load_students
   filename = ARGV.first # first argument from the command line
-  return if filename.nil? # get out of the method if the filename is not given
   if File.exists?(filename) # if it exists
     load_students(filename)
     puts "Loaded #{@students.count} from #{filename}"
@@ -185,8 +184,8 @@ def load_students(filename = "students.csv")
   @students = []
   CSV.foreach(filename) do |line|
     name, cohort, country, height, hobbies = line
-    hobbies = hobbies[1..-2].gsub(/(")/, "").split(", ")
-    @students << {name: name, cohort: cohort.to_sym, country: country, height: height, hobbies: hobbies}
+    hobbies = hobbies[1..-2].gsub(/(")/, "")
+    add_student(name, cohort, country, height, hobbies)
   end
 end
 
@@ -196,6 +195,10 @@ def save_students
       csv << [student[:name], student[:cohort], student[:country], student[:height], student[:hobbies]]
     end
   end
+end
+
+def add_student(name, cohort, country, height, hobbies)
+  @students << {name: name, cohort: cohort.to_sym, country: country, height: height, hobbies: hobbies.split(", ")}
 end
 
 # nothing happens until we call the methods
