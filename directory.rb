@@ -6,8 +6,8 @@ require 'csv'
 def get_input(prompt)
   puts prompt
   # use gsub instead of chomp to remove carriage returns
-  gets.gsub(/[\r\n]+$/, "")
-  # gets.chomp
+  STDIN.gets.gsub(/[\r\n]+$/, "")
+  # STDIN.gets.chomp
 end
 
 def get_cohort
@@ -163,15 +163,27 @@ def interactive_menu
     # 1. print the menu and ask the user what to do
     print_menu()
     # 2. read the input and save it to a variable
-    selection = gets.chomp
+    selection = STDIN.gets.chomp
     # 3. do what the user has asked
     process(selection)
   end
 end
 
-def load_students
+def try_load_students
+  filename = ARGV.first # first argument from the command line
+  return if filename.nil? # get out of the method if the filename is not given
+  if File.exists?(filename) # if it exists
+    load_students(filename)
+    puts "Loaded #{@students.count} from #{filename}"
+  else # if it doesn't exist
+    puts "Sorry, #{filename} doesn't exists."
+    exit # quit the program
+  end
+end
+
+def load_students(filename = "students.csv")
   @students = []
-  CSV.foreach("students.csv") do |line|
+  CSV.foreach(filename) do |line|
     name, cohort, country, height, hobbies = line
     hobbies = hobbies[1..-2].gsub(/(")/, "").split(", ")
     @students << {name: name, cohort: cohort.to_sym, country: country, height: height, hobbies: hobbies}
@@ -193,4 +205,5 @@ end
 # students = order_students_by_cohort(students)
 # print_student_list(students)
 
+try_load_students()
 interactive_menu()
