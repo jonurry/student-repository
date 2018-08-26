@@ -145,6 +145,7 @@ def process(selection)
   when "4"
     load_students()
   when "9"
+    puts "Exiting, goodbye!"
     exit # this will cause the program to terminate
   else
     puts "I don't know what you meant, try again"
@@ -169,7 +170,6 @@ def try_load_students
   end
   if File.exists?(filename) # if it exists
     load_students(filename)
-    puts "Loaded #{@students.count} from #{filename}"
   else # if it doesn't exist
     puts "Sorry, #{filename} doesn't exists."
     exit # quit the program
@@ -183,14 +183,16 @@ def load_students(filename = "students.csv")
     hobbies = hobbies[1..-2].gsub(/(")/, "")
     add_student(name, cohort, country, height, hobbies)
   end
+  puts "Loaded #{@students.count} from #{filename}"
 end
 
-def save_students
+def save_students(filename = "students.csv")
   CSV.open("students.csv", "wb") do |csv|
     @students.each do |student|
       csv << [student[:name], student[:cohort], student[:country], student[:height], student[:hobbies]]
     end
   end
+  puts "Saved #{@students.count} to #{filename}"
 end
 
 def add_student(name, cohort, country, height, hobbies)
