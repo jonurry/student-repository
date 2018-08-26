@@ -128,8 +128,8 @@ end
 def print_menu
   puts "1. Input the students"
   puts "2. Show the students"
-  puts "3. Save the list to students.csv"
-  puts "4. Load the list from students.csv"
+  puts "3. Save the list to a file"
+  puts "4. Load the list from a file"
   puts "9. Exit" # 9 because we'll be adding more items later
 end
 
@@ -176,8 +176,9 @@ def try_load_students
   end
 end
 
-def load_students(filename = "students.csv")
+def load_students(filename = "")
   @students = []
+  filename = ask_for_filename if filename.empty?
   CSV.foreach(filename) do |line|
     name, cohort, country, height, hobbies = line
     hobbies = hobbies[1..-2].gsub(/(")/, "")
@@ -186,8 +187,9 @@ def load_students(filename = "students.csv")
   puts "Loaded #{@students.count} from #{filename}"
 end
 
-def save_students(filename = "students.csv")
-  CSV.open("students.csv", "wb") do |csv|
+def save_students(filename = "")
+  filename = ask_for_filename if filename.empty?
+  CSV.open(filename, "wb") do |csv|
     @students.each do |student|
       csv << [student[:name], student[:cohort], student[:country], student[:height], student[:hobbies]]
     end
@@ -197,6 +199,13 @@ end
 
 def add_student(name, cohort, country, height, hobbies)
   @students << {name: name, cohort: cohort.to_sym, country: country, height: height, hobbies: hobbies.split(", ")}
+end
+
+def ask_for_filename
+  puts "Type the filename to use, or hit return for default (students.csv):"
+  filename = gets.chomp
+  filename = "students.csv" if filename.empty?
+  return filename
 end
 
 # nothing happens until we call the methods
